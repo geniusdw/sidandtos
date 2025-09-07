@@ -1,13 +1,12 @@
 const express = require('express');
 const multer = require('multer');
 const jwt = require('jsonwebtoken');
-const sqlite3 = require('sqlite3').verbose();
 const fs = require('fs');
 const path = require('path');
 require('dotenv').config();
+const { db } = require('../database/init');
 
 const router = express.Router();
-const db = new sqlite3.Database(process.env.DB_PATH);
 
 // Multer config
 const storage = multer.diskStorage({
@@ -19,8 +18,12 @@ const upload = multer({ storage });
 
 // JWT middleware
 function authenticateToken(req, res, next) {
-  const token = req.headers['authorization'];
-  if (!token) return res.status(401).json({ error: 'No token provided' });
+  const authHeader = req.headers['authorization'];
+  if (!authHeader) return res.status(401).json({ error: 'No token provided' });
+
+  const token = authHeader.startsWith('Bearer ')
+    ? authHeader.slice(7)
+    : authHeader;
 
   jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
     if (err) return res.status(401).json({ error: 'Invalid token' });

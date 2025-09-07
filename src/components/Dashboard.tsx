@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
 
-interface File {
+interface FileItem {
   id: number;
   original_name: string;
   file_size: number;
@@ -12,7 +12,7 @@ interface File {
 
 const Dashboard: React.FC = () => {
   const { user, logout } = useAuth();
-  const [files, setFiles] = useState<File[]>([]);
+  const [files, setFiles] = useState<FileItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
@@ -37,7 +37,7 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  const handleFileUpload = async (file: File) => {
+  const handleFileUpload = async (file: globalThis.File) => {
     const formData = new FormData();
     formData.append('file', file);
 
